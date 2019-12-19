@@ -1,5 +1,7 @@
 # Pronoun bot
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 The purpose of this bot is to assign people roles with pronouns.
 
 ## Discordjs
