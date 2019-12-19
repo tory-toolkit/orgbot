@@ -2,45 +2,49 @@ const Http = require('http');
 
 const Discord = require('discord.js');
 
-const pronounify = require('./src/pronouns');
+const github = require('./src/github_api');
 const validate = require('./src/validate');
 
-const token = process.env.DISCORD_API_TOKEN;
+const discordToken = process.env.DISCORD_API_TOKEN;
+const githubToken = process.env.GITHUB_API_TOKEN;
 
-validate.token(token);
+validate.token(githubToken, discordToken);
 
 // Create an instance of a Discord client
 const client = new Discord.Client();
 
 client.on('ready', () => {
-  console.log('I\'m up!');
+  console.log("I'm up!");
 });
 
 client.on('message', message => {
-  const pronouns = pronounify.extractPronouns(message.content)
-
-  if (pronouns) {
-    const guildRoles = message.guild.roles;
-    const member = message.member;
-    const returnMessage = pronounify.setPronouns(pronouns, guildRoles, member);
-    if (returnMessage) {
-      message.channel.send(returnMessage);
+  const messageTokens = message.content.split(/ +/);
+  if (messageTokens[0] === 'orgbot') {
+    if (messageTokens[1] === 'check' && messageTokens.length === 3) {
+      github.checkMembership('tory-toolkit', messageTokens[2], resp => {
+        message.reply(resp);
+      });
+    } else if (messageTokens[1] === 'add' && messageTokens.length === 3) {
+      // TODO: implement and call inviteMember instead
+      github.checkMembership('tory-toolkit', messageTokens[2], resp => {
+        message.reply(resp);
+      });
     } else {
-      console.log('there was a problem setting roles, missing role?');
+      message.reply(`Invalid command. Try
+      \`orgbot check USERNAME\` -- check if GitHub user USERNAME is an organisation member
+      \`orgbot add USERNAME  \` -- invite GitHub user USERNAME to the organisation`);
     }
   }
-
 });
 
-client.on('error', (err) => {
+client.on('error', err => {
   console.log(err);
 });
 
-client.login(token);
+client.login(discordToken);
 
 // For setting up uptime robot / monitoring
 const monitoringServer = Http.createServer((request, response) => {
-
   const statuses = {
     0: 'Ready',
     1: 'Connecting',
@@ -55,7 +59,7 @@ const monitoringServer = Http.createServer((request, response) => {
   response.end();
 });
 
-monitoringServer.listen(3838, (err) => {
+monitoringServer.listen(3838, err => {
   if (err) {
     return console.log('monitoring crashed', err);
   }

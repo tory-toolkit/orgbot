@@ -1,24 +1,28 @@
 {
-  "name": "pronounbot",
+  "name": "orgbot",
   "version": "1.0.0",
-  "description": "A discord bot for specifying and requesting pronouns",
+  "description": "A Discord bot to allow users to request membership in a GitHub organisation",
   "main": "index.js",
   "scripts": {
     "test": "node_modules/.bin/mocha"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tory-toolkit/pronounbot.git"
+    "url": "git+https://github.com/tory-toolkit/orgbot.git"
   },
   "author": "tory-toolkit",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/tory-toolkit/pronounbot/issues"
+    "url": "https://github.com/tory-toolkit/orgbot/issues"
   },
-  "homepage": "https://github.com/tory-toolkit/pronounbot#readme",
+  "homepage": "https://github.com/tory-toolkit/orgbot#readme",
   "dependencies": {
+    "@octokit/rest": "^16.35.2",
+    "@types/node": "^12.12.21",
     "chai": "^4.2.0",
     "discord.js": "^11.5.1",
+    "eslint": "^6.7.2",
+    "lodash": "^4.17.15",
     "mocha": "^6.2.2",
     "pm2": "^4.2.1",
     "sinon": "^7.5.0"
