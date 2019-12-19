@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-The purpose of this bot is to assign people roles with pronouns.
+The purpose of this bot is for people to assign themselves roles which represent pronouns.
 
 ## Discordjs
 
