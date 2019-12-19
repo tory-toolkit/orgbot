@@ -22,7 +22,7 @@ client.on('message', message => {
   if (pronouns) {
     const guildRoles = message.guild.roles;
     const member = message.member;
-    const returnMessage = pronounify.setPronouns(roleName, guildRoles, member);
+    const returnMessage = pronounify.setPronouns(pronouns, guildRoles, member);
     if (returnMessage) {
       message.channel.send(returnMessage);
     } else {
