@@ -1,4 +1,4 @@
 FROM node:10
 COPY . /App
 WORKDIR /App
-RUN npm ci
+RUN make && make bot-start

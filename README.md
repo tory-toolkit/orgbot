@@ -8,7 +8,22 @@ The purpose of this bot is for people to assign themselves roles which represent
 
 The main functionality for this project comes from [discordjs](https://discord.js.org/#/docs/main/stable/general/welcome)
 
-## Running Requirements
+## Running the bot
+
+We're using [pm2](https://pm2.keymetrics.io/docs/usage/pm2-doc-single-page/) to run the node service for us for crash recovery and on box monitoring. 
+
+On successful startup the bot will run a http server that can be used to check the status of the discord client, it runs on port 3838.
+
+### starting, stopping, etc
+
+This is all managed through makefile targets
+
+```bash
+$ make bot-start
+$ make bot-stop
+$ make bot-status # Prints the status of the bot in pm2, memory and other useful things
+$ make bot-kill # This will stop pm2 entirely
+```
 
 ### Discord developer application
 
