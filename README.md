@@ -2,11 +2,23 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-The purpose of this bot is for people to assign themselves roles which represent pronouns.
+The purpose of this bot is for people to assign themselves roles which represent pronouns. This is a nodejs application that is happy to run in node:10 or later.
 
 ## Discordjs
 
-The main functionality for this project comes from [discordjs](https://discord.js.org/#/docs/main/stable/general/welcome)
+The main functionality for this project comes from [discordjs](https://discord.js.org/#/docs/main/stable/general/welcome).
+
+## Build
+
+This project is using `make`, you can build with
+
+```bash
+$ make
+or
+$ make prepare
+or 
+$ make build
+```
 
 ## Running the bot
 

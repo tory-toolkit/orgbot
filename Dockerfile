@@ -1,4 +1,4 @@
 FROM node:10
 COPY . /App
 WORKDIR /App
-RUN make && make bot-start
+RUN make build && make bot-start
