@@ -58,3 +58,8 @@ $ export DISCORD_API_TOKEN=123potato
 Testing is with [mocha](https://mochajs.org/api/), [chai](https://www.chaijs.com/api/) and [sinon](https://sinonjs.org/).
 
 You can run tests with `make test` or `npm test`
+
+
+# TODO
+
+Help function needs writing and links added to [pronoun island](http://pronoun.is/)
