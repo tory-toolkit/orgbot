@@ -1,0 +1,25 @@
+{
+  "name": "pronounbot",
+  "version": "1.0.0",
+  "description": "A discord bot for specifying and requesting pronouns",
+  "main": "index.js",
+  "scripts": {
+    "test": "node_modules/.bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tory-toolkit/pronounbot.git"
+  },
+  "author": "tory-toolkit",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tory-toolkit/pronounbot/issues"
+  },
+  "homepage": "https://github.com/tory-toolkit/pronounbot#readme",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "discord.js": "^11.5.1",
+    "mocha": "^6.2.2",
+    "sinon": "^7.5.0"
+  }
+}
