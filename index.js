@@ -1,4 +1,5 @@
 const Http = require('http');
+const httpPort = 3838;
 
 const Discord = require('discord.js');
 
@@ -24,15 +25,14 @@ client.on('message', message => {
       github.checkMembership('tory-toolkit', messageTokens[2], resp => {
         message.reply(resp);
       });
-    } else if (messageTokens[1] === 'add' && messageTokens.length === 3) {
-      // TODO: implement and call inviteMember instead
-      github.checkMembership('tory-toolkit', messageTokens[2], resp => {
+    } else if (messageTokens[1] === 'invite' && messageTokens.length === 3) {
+      github.inviteMember('tory-toolkit', messageTokens[2], resp => {
         message.reply(resp);
       });
     } else {
       message.reply(`Invalid command. Try
-      \`orgbot check USERNAME\` -- check if GitHub user USERNAME is an organisation member
-      \`orgbot add USERNAME  \` -- invite GitHub user USERNAME to the organisation`);
+      \`orgbot check USERNAME \` -- check if GitHub user USERNAME is a member of the organisation
+      \`orgbot invite USERNAME\` -- invite GitHub user USERNAME to the organisation`);
     }
   }
 });
@@ -59,9 +59,9 @@ const monitoringServer = Http.createServer((request, response) => {
   response.end();
 });
 
-monitoringServer.listen(3838, err => {
+monitoringServer.listen(httpPort, err => {
   if (err) {
     return console.log('monitoring crashed', err);
   }
-  console.log(`monitoring server is listening on ${3838}`);
+  console.log(`monitoring server is listening on ${httpPort}`);
 });

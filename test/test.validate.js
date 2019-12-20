@@ -9,9 +9,7 @@ const before = mocha.before;
 const after = mocha.after;
 const afterEach = mocha.afterEach;
 
-
 describe('validate', () => {
-
   describe('token', () => {
     let exitStub;
     let logStub;
@@ -44,7 +42,5 @@ describe('validate', () => {
 
       sinon.assert.notCalled(process.exit);
     });
-  
   });
-
 });
