@@ -19,7 +19,7 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-  const messageTokens = message.content.split(/ +/);
+  const messageTokens = message.content.split(/ +/).map(v => v.toLowerCase());
   if (messageTokens[0] === 'orgbot') {
     if (messageTokens[1] === 'check' && messageTokens.length === 3) {
       github.checkMembership('tory-toolkit', messageTokens[2], resp => {

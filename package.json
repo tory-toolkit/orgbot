@@ -1,6 +1,6 @@
 {
   "name": "orgbot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Discord bot to allow users to request membership in a GitHub organisation",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "@types/node": "^12.12.21",
     "chai": "^4.2.0",
     "discord.js": "^11.5.1",
-    "eslint": "^6.7.2",
+    "eslint": "^6.8.0",
     "lodash": "^4.17.15",
     "mocha": "^6.2.2",
     "pm2": "^4.2.1",
