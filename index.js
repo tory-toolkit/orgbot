@@ -19,22 +19,38 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-  const messageTokens = message.content.split(/ +/).map(v => v.toLowerCase());
-  if (messageTokens[0] === 'orgbot') {
-    if (messageTokens[1] === 'check' && messageTokens.length === 3) {
-      github.checkMembership('tory-toolkit', messageTokens[2], resp => {
-        message.reply(resp);
-      });
-    } else if (messageTokens[1] === 'invite' && messageTokens.length === 3) {
-      github.inviteMember('tory-toolkit', messageTokens[2], resp => {
+  if (message.author.bot) return;
+
+  const messageTokens = message.content.toLowerCase().split(/ +/);
+  const orgName = 'tory-toolkit';
+
+  if (!messageTokens[0] === 'orgbot') return;
+
+  const command = messageTokens[1];
+  const user = messageTokens[2];
+
+  if (command === 'check') {
+    if (messageTokens.length === 3) {
+      github.checkMembership(orgName, user, resp => {
         message.reply(resp);
       });
     } else {
       message.reply(`Invalid command. Try
-      \`orgbot check USERNAME \` -- check if GitHub user USERNAME is a member of the organisation
+      \`orgbot check USERNAME \` -- check if GitHub user USERNAME is a member of the organisation`);
+    }
+  }
+
+  if (command === 'invite') {
+    if (messageTokens.length === 3) {
+      github.inviteMember(orgName, user, resp => {
+        message.reply(resp);
+      });
+    } else {
+      message.reply(`Invalid command. Try
       \`orgbot invite USERNAME\` -- invite GitHub user USERNAME to the organisation`);
     }
   }
+
 });
 
 client.on('error', err => {
