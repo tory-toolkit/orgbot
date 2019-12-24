@@ -1,43 +1,78 @@
+const GITHUB_ORG_NAME = 'tory-toolkit';
+const BOT_NAME = 'orgbot';
+
+/// The command executed on `orgbot invite <user>`
+class InviteUserCommand {
+  constructor(github) {
+    this.name = 'invite';
+    this.github = github;
+  }
+
+  run(user, responseHandler) {
+    this.github.inviteMember(GITHUB_ORG_NAME, user, responseHandler);
+  }
+}
+
+/// The command executed on `orgbot check <user>`
+class CheckUserCommand {
+  constructor(github) {
+    this.name = 'check';
+    this.github = github;
+  }
+
+  run(user, responseHandler) {
+    this.github.checkMembership(GITHUB_ORG_NAME, user, responseHandler);
+  }
+}
+
+/// The entry point for handling a new message.
 class MessageHandler {
   constructor(github) {
-    this.github = github;
+    this.commands = [
+      new InviteUserCommand(github),
+      new CheckUserCommand(github)
+    ];
   }
 
   handleMessage(message) {
     if (message.author.bot) return;
 
-    const messageTokens = message.content.toLowerCase().split(/ +/);
-    const orgName = 'tory-toolkit';
+    const invocation = this.extractInvocation(message.content);
 
-    if (messageTokens[0] !== 'orgbot') return;
+    if (invocation.botName !== BOT_NAME) return;
 
-    const command = messageTokens[1];
-    const user = messageTokens[2];
-
-    const isRecognisedCommand = ['check', 'invite'].includes(command);
-    if (isRecognisedCommand) {
-      if (command === 'check') {
-        if (messageTokens.length === 3) {
-          this.github.checkMembership(orgName, user, resp => {
-            message.reply(resp);
-          });
-        } else {
-          message.reply('Invalid use of `orgbot check`. Try `orgbot check <YOUR_GITHUB_USERNAME>` instead.');
-        }
-      }
-
-      if (command === 'invite') {
-        if (messageTokens.length === 3) {
-          this.github.inviteMember(orgName, user, resp => {
-            message.reply(resp);
-          });
-        } else {
-          message.reply('Invalid use of `orgbot invite`. Try `orgbot invite <YOUR_GITHUB_USERNAME>` instead.');
-        }
-      }
-    } else {
-      message.reply(`I don't understand the command \`${command}\`.`)
+    const command = this.commands.find(
+      command => command.name === invocation.commandName
+    );
+    if (!command) {
+      message.reply(
+        `I don't understand the command \`${invocation.commandName}\`.`
+      );
+      return;
     }
+
+    if (!invocation.user) {
+      message.reply(this.invalidUseError(invocation));
+      return;
+    }
+
+    command.run(invocation.user, response => {
+      message.reply(response);
+    });
+  }
+
+  extractInvocation(messageContent) {
+    const messageTokens = messageContent.toLowerCase().split(/ +/);
+    return {
+      botName: messageTokens[0],
+      commandName: messageTokens[1],
+      user: messageTokens[2]
+    };
+  }
+
+  invalidUseError(invocation) {
+    const userInvocation = `${invocation.botName} ${invocation.commandName}`;
+    return `Invalid use of \`${userInvocation}\`. Try \`${userInvocation} <YOUR_GITHUB_USERNAME>\` instead.`;
   }
 }
 
