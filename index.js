@@ -15,30 +15,26 @@ validate.token(githubToken, discordToken);
 // Create an instance of a Discord client
 const client = new Discord.Client();
 
-client.on('ready', () => {
-  console.log("I'm up!");
-});
+client.on('ready', () => { console.log("I'm up!"); });
 
 client.on('message', messageHandler.handleMessage);
 
-client.on('error', err => {
-  console.log(err);
-});
+client.on('error', err => { console.log(err); });
 
 client.login(discordToken);
 
 // For setting up uptime robot / monitoring
 const monitoringServer = Http.createServer((request, response) => {
   const statuses = {
-    0: 'Ready',
-    1: 'Connecting',
-    2: 'Reconnecting',
-    3: 'Idle',
-    4: 'Nearly',
-    5: 'Disconnected'
+    0 : 'Ready',
+    1 : 'Connecting',
+    2 : 'Reconnecting',
+    3 : 'Idle',
+    4 : 'Nearly',
+    5 : 'Disconnected'
   };
 
-  response.writeHead(200, { 'Content-Type': 'text/html' });
+  response.writeHead(200, {'Content-Type' : 'text/html'});
   response.write(statuses[client.status]);
   response.end();
 });

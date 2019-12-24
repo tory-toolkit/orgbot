@@ -28,26 +28,24 @@ class CheckUserCommand {
 /// The entry point for handling a new message.
 class MessageHandler {
   constructor(github) {
-    this.commands = [
-      new InviteUserCommand(github),
-      new CheckUserCommand(github)
-    ];
+    this.commands =
+        [ new InviteUserCommand(github), new CheckUserCommand(github) ];
   }
 
   handleMessage(message) {
-    if (message.author.bot) return;
+    if (message.author.bot)
+      return;
 
     const invocation = this.extractInvocation(message.content);
 
-    if (invocation.botName !== BOT_NAME) return;
+    if (invocation.botName !== BOT_NAME)
+      return;
 
-    const command = this.commands.find(
-      command => command.name === invocation.commandName
-    );
+    const command =
+        this.commands.find(command => command.name === invocation.commandName);
     if (!command) {
       message.reply(
-        `I don't understand the command \`${invocation.commandName}\`.`
-      );
+          `I don't understand the command \`${invocation.commandName}\`.`);
       return;
     }
 
@@ -56,23 +54,22 @@ class MessageHandler {
       return;
     }
 
-    command.run(invocation.user, response => {
-      message.reply(response);
-    });
+    command.run(invocation.user, response => { message.reply(response); });
   }
 
   extractInvocation(messageContent) {
     const messageTokens = messageContent.toLowerCase().split(/ +/);
     return {
-      botName: messageTokens[0],
-      commandName: messageTokens[1],
-      user: messageTokens[2]
+      botName : messageTokens[0],
+      commandName : messageTokens[1],
+      user : messageTokens[2]
     };
   }
 
   invalidUseError(invocation) {
     const userInvocation = `${invocation.botName} ${invocation.commandName}`;
-    return `Invalid use of \`${userInvocation}\`. Try \`${userInvocation} <YOUR_GITHUB_USERNAME>\` instead.`;
+    return `Invalid use of \`${userInvocation}\`. Try \`${
+        userInvocation} <YOUR_GITHUB_USERNAME>\` instead.`;
   }
 }
 
