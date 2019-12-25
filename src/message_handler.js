@@ -1,26 +1,40 @@
 const GITHUB_ORG_NAME = process.env.GITHUB_ORG_NAME;
 const BOT_NAME = process.env.BOT_NAME;
 
-/// The command executed on `orgbot invite <user>`
+/// The command executed on `<BOT_NAME> invite <user>`
 class InviteUserCommand {
   constructor(github) {
     this.name = 'invite';
     this.github = github;
   }
 
-  run(user, responseHandler) {
+  run([user], responseHandler, errorHandler) {
+    if (!user) {
+      errorHandler(({userInvocation}) => {
+        return `Invalid use of \`${userInvocation}\`. Try \`${userInvocation} <YOUR_GITHUB_USERNAME>\` instead.`;
+      })
+      return;
+    }
+
     this.github.inviteMember(GITHUB_ORG_NAME, user, responseHandler);
   }
 }
 
-/// The command executed on `orgbot check <user>`
+/// The command executed on `<BOT_NAME> check <user>`
 class CheckUserCommand {
   constructor(github) {
     this.name = 'check';
     this.github = github;
   }
 
-  run(user, responseHandler) {
+  run([user], responseHandler, errorHandler) {
+    if (!user) {
+      errorHandler(({userInvocation}) => {
+        return `Invalid use of \`${userInvocation}\`. Try \`${userInvocation} <YOUR_GITHUB_USERNAME>\` instead.`;
+      })
+      return;
+    }
+
     this.github.checkMembership(GITHUB_ORG_NAME, user, responseHandler);
   }
 }
@@ -36,6 +50,8 @@ class MessageHandler {
     this.handleMessage = this.handleMessage.bind(this);
     this.extractInvocation = this.extractInvocation.bind(this);
     this.handleMessage = this.handleMessage.bind(this);
+    this.makeResponseHandler = this.makeResponseHandler.bind(this);
+    this.makeErrorHandler = this.makeErrorHandler.bind(this);
   }
 
   handleMessage(message) {
@@ -48,6 +64,7 @@ class MessageHandler {
     const command = this.commands.find(
       command => command.name === invocation.commandName
     );
+
     if (!command) {
       message.reply(
         `I don't understand the command \`${invocation.commandName}\`.`
@@ -55,22 +72,34 @@ class MessageHandler {
       return;
     }
 
-    if (!invocation.user) {
-      message.reply(this.invalidUseError(invocation));
-      return;
-    }
+    command.run(
+      invocation.params,
+      this.makeResponseHandler(message),
+      this.makeErrorHandler(message, invocation)
+    );
+  }
 
-    command.run(invocation.user, response => {
-      message.reply(response);
-    });
+  makeResponseHandler(message) {
+    return response => message.reply(response);
+  }
+
+  makeErrorHandler(message, invocation) {
+    return errorMessageFactory => {
+      const errorMessageParams = {
+        userInvocation: `${invocation.botName} ${invocation.commandName}`,
+      }
+      const errorMessage = errorMessageFactory(errorMessageParams);
+
+      message.reply(errorMessage);
+    }
   }
 
   extractInvocation(messageContent) {
-    const messageTokens = messageContent.toLowerCase().split(/ +/);
+    const [botName, commandName, ...params] = messageContent.toLowerCase().split(/ +/);
     return {
-      botName: messageTokens[0],
-      commandName: messageTokens[1],
-      user: messageTokens[2]
+      botName: botName,
+      commandName: commandName,
+      params: params,
     };
   }
 
