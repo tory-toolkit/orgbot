@@ -32,6 +32,10 @@ class MessageHandler {
       new InviteUserCommand(github),
       new CheckUserCommand(github)
     ];
+
+    this.handleMessage = this.handleMessage.bind(this);
+    this.extractInvocation = this.extractInvocation.bind(this);
+    this.handleMessage = this.handleMessage.bind(this);
   }
 
   handleMessage(message) {
