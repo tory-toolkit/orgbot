@@ -1,5 +1,5 @@
-const GITHUB_ORG_NAME = 'tory-toolkit';
-const BOT_NAME = 'orgbot';
+const GITHUB_ORG_NAME = process.env.GITHUB_ORG_NAME;
+const BOT_NAME = process.env.BOT_NAME;
 
 /// The command executed on `orgbot invite <user>`
 class InviteUserCommand {
