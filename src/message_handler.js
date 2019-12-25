@@ -76,4 +76,4 @@ class MessageHandler {
   }
 }
 
-module.exports = MessageHandler;
+module.exports = github => new MessageHandler(github);
