@@ -4,7 +4,7 @@ const httpPort = 3838;
 const Discord = require('discord.js');
 
 const github = require('./src/github_api');
-const messageHandler = require('./src/message_handler')(github);
+const messageHandler = new (require('./src/message_handler'))(github);
 const validate = require('./src/validate');
 
 const discordToken = process.env.DISCORD_API_TOKEN;
