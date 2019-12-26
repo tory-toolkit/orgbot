@@ -1,6 +1,3 @@
-const GITHUB_ORG_NAME = process.env.GITHUB_ORG_NAME;
-const BOT_NAME = process.env.BOT_NAME;
-
 /// The command executed on `<BOT_NAME> invite <user>`
 class InviteUserCommand {
   constructor(github) {
@@ -16,7 +13,17 @@ class InviteUserCommand {
       return;
     }
 
-    this.github.inviteMember(GITHUB_ORG_NAME, user, responseHandler);
+    this.github.inviteMember(user, responseHandler, err => {
+      errorHandler(() => {
+        switch (err) {
+          case 'rate-limited':
+            return 'GitHub rate-limits organisation invitations particularly aggressively. Unfortunately, we have reached the limit for this period. Try again in 24 hours.';
+          
+            default:
+              return 'Unknown error. Try again later, or contact @daveio if the issue persists.';
+        }
+      })
+    });
   }
 }
 
@@ -35,23 +42,30 @@ class CheckUserCommand {
       return;
     }
 
-    this.github.checkMembership(GITHUB_ORG_NAME, user, responseHandler);
+    this.github.checkMembership(user, responseHandler, err => {
+      errorHandler(({botName}) => {
+        switch (err) {
+          case 'not-found':
+            return `\`${user}\` is not a member of the \`${this.github.org_name}\` organisation. If you would like to invite them, say \`${botName} invite ${user}\`.`
+          
+          default:
+            return 'Unknown error. Try again later, or contact @daveio if the issue persists.';
+        }
+      })
+    });
   }
 }
 
 /// The entry point for handling a new message.
 class MessageHandler {
-  constructor(github) {
+  constructor(github, botName) {
     this.commands = [
       new InviteUserCommand(github),
       new CheckUserCommand(github)
     ];
+    this.botName = botName || 'orgbot';
 
     this.handleMessage = this.handleMessage.bind(this);
-    this.extractInvocation = this.extractInvocation.bind(this);
-    this.handleMessage = this.handleMessage.bind(this);
-    this.makeResponseHandler = this.makeResponseHandler.bind(this);
-    this.makeErrorHandler = this.makeErrorHandler.bind(this);
   }
 
   handleMessage(message) {
@@ -59,7 +73,7 @@ class MessageHandler {
 
     const invocation = this.extractInvocation(message.content);
 
-    if (invocation.botName !== BOT_NAME) return;
+    if (invocation.botName !== this.botName) return;
 
     const command = this.commands.find(
       command => command.name === invocation.commandName
@@ -87,6 +101,7 @@ class MessageHandler {
     return errorMessageFactory => {
       const errorMessageParams = {
         userInvocation: `${invocation.botName} ${invocation.commandName}`,
+        botName: this.botName,
       }
       const errorMessage = errorMessageFactory(errorMessageParams);
 
@@ -101,11 +116,6 @@ class MessageHandler {
       commandName: commandName,
       params: params,
     };
-  }
-
-  invalidUseError(invocation) {
-    const userInvocation = `${invocation.botName} ${invocation.commandName}`;
-    return `Invalid use of \`${userInvocation}\`. Try \`${userInvocation} <YOUR_GITHUB_USERNAME>\` instead.`;
   }
 }
 
