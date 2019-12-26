@@ -65,4 +65,43 @@ describe('validate', () => {
 
   });
 
+  describe('bot', () => {
+    let logStub;
+
+    before(() => {
+      logStub = sinon.stub(console, 'log');
+    });
+
+    after(() => {
+      console.log.restore();
+    });
+
+    afterEach(() => {
+      logStub.reset();
+    });
+
+    it('Should log a warning message when GITHUB_ORG_NAME is not set', () => {
+      const warning = 'GITHUB_ORG_NAME environment variable not supplied, defaulting to "tory-toolkit"';
+      validate.bot(null, 'bot-name');
+
+      sinon.assert.called(console.log);
+      expect(logStub.calledWith(warning)).to.equal(true);
+    })
+
+    it('Should log a warning message when BOT_NAME is not set', () => {
+      const warning = 'BOT_NAME environment variable not supplied, defaulting to "orgbot"';
+      validate.bot('org-name', null);
+
+      sinon.assert.called(console.log);
+      expect(logStub.calledWith(warning)).to.equal(true);
+    })
+
+    it('Should not log any messages when GITHUB_ORG_NAME and BOT_NAME are set', () => {
+      validate.bot('org-name', 'bot-name');
+
+      sinon.assert.notCalled(console.log);
+    })
+
+  });
+
 });
