@@ -1,3 +1,5 @@
+const DefaultErrorMessage = 'Unknown error. Try again later, or contact @daveio if the issue persists.';
+
 /// The command executed on `<BOT_NAME> invite <user>`
 class InviteUserCommand {
   constructor(github) {
@@ -20,7 +22,7 @@ class InviteUserCommand {
             return 'GitHub rate-limits organisation invitations particularly aggressively. Unfortunately, we have reached the limit for this period. Try again in 24 hours.';
           
             default:
-              return 'Unknown error. Try again later, or contact @daveio if the issue persists.';
+              return DefaultErrorMessage;
         }
       })
     });
@@ -49,7 +51,7 @@ class CheckUserCommand {
             return `\`${user}\` is not a member of the \`${this.github.org_name}\` organisation. If you would like to invite them, say \`${botName} invite ${user}\`.`
           
           default:
-            return 'Unknown error. Try again later, or contact @daveio if the issue persists.';
+            return DefaultErrorMessage;
         }
       })
     });
