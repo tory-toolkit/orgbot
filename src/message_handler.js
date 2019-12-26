@@ -21,8 +21,8 @@ class InviteUserCommand {
           case 'rate-limited':
             return 'GitHub rate-limits organisation invitations particularly aggressively. Unfortunately, we have reached the limit for this period. Try again in 24 hours.';
           
-            default:
-              return DefaultErrorMessage;
+          default:
+            return DefaultErrorMessage;
         }
       })
     });
