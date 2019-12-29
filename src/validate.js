@@ -9,6 +9,16 @@ const token = (githubToken, discordToken) => {
   }
 };
 
+const bot = (githubOrgName, botName) => {
+  if (githubOrgName === undefined || githubOrgName === null) {
+    console.log('GITHUB_ORG_NAME environment variable not supplied, defaulting to "tory-toolkit"');
+  }
+  if (botName === undefined || botName === null) {
+    console.log('BOT_NAME environment variable not supplied, defaulting to "orgbot"');
+  }
+}
+
 module.exports = {
-  token
+  token,
+  bot,
 };

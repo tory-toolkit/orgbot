@@ -11,6 +11,7 @@ const afterEach = mocha.afterEach;
 
 describe('MessageHandler', () => {
   const fakeGithub = {
+    org_name: 'tory-toolkit',
     checkMembership: sinon.fake(),
     inviteMember: sinon.fake(),
     reset: function() {
@@ -18,7 +19,7 @@ describe('MessageHandler', () => {
       this.inviteMember = sinon.fake();
     }
   };
-  const messageHandler = new MessageHandler(fakeGithub);
+  const messageHandler = new MessageHandler(fakeGithub, 'orgbot');
 
   const makeMessage = function(partialMessage) {
     return { content: '', author: {}, reply: sinon.fake(), ...partialMessage };
@@ -85,26 +86,43 @@ describe('MessageHandler', () => {
       });
 
       describe('when user tories_out is passed in', () => {
-        const validMessage = makeMessage({
-          content: 'orgbot check tories_out'
-        });
+        let validMessage;
+
+        beforeEach(() => {
+          validMessage = makeMessage({
+            content: 'orgbot check tories_out',
+          });
+        })
 
         it('checks with github whether the user is part of the org', () => {
           messageHandler.handleMessage(validMessage);
           const args = fakeGithub.checkMembership.getCall(0).args;
-          expect(args.slice(0, 2)).to.be.deep.equal([
-            'tory-toolkit',
-            'tories_out'
-          ]);
+          expect(args[0]).to.be.equal('tories_out');
         });
 
         describe('and the github check completes', () => {
           it('replies with the response from github', () => {
             messageHandler.handleMessage(validMessage);
-            fakeGithub.checkMembership.getCall(0).args[2]('All done');
+            fakeGithub.checkMembership.getCall(0).args[1]('All done');
             const message = validMessage.reply.getCall(0).args[0];
             expect(message).to.equal('All done');
           });
+
+          it('replies with a message when user not found in organisation', () => {
+            messageHandler.handleMessage(validMessage);
+            fakeGithub.checkMembership.getCall(0).args[2]('not-found');
+            const message = validMessage.reply.getCall(0).args[0];
+            const expectedMessage = '`tories_out` is not a member of the `tory-toolkit` organisation. If you would like to invite them, say `orgbot invite tories_out`.';
+            expect(message).to.equal(expectedMessage);
+          })
+
+          it('replies with a default error message when github responds with a unrecognized error', () => {
+            messageHandler.handleMessage(validMessage);
+            fakeGithub.checkMembership.getCall(0).args[2]('unknown-error');
+            const message = validMessage.reply.getCall(0).args[0];
+            const expectedMessage = 'Unknown error. Try again later, or contact @daveio if the issue persists.';
+            expect(message).to.equal(expectedMessage);
+          })
         });
       });
     });
@@ -124,26 +142,43 @@ describe('MessageHandler', () => {
       });
 
       describe('when user no-ethical-consumption is passed in', () => {
-        const validMessage = makeMessage({
-          content: 'orgbot invite no-ethical-consumption'
-        });
+        let validMessage;
+
+        beforeEach(() => {
+          validMessage = makeMessage({
+            content: 'orgbot invite no-ethical-consumption',
+          });
+        })
 
         it('tells github to invite them to the org', () => {
           messageHandler.handleMessage(validMessage);
           const args = fakeGithub.inviteMember.getCall(0).args;
-          expect(args.slice(0, 2)).to.be.deep.equal([
-            'tory-toolkit',
-            'no-ethical-consumption'
-          ]);
+          expect(args[0]).to.be.equal('no-ethical-consumption');
         });
 
         describe('and github completes', () => {
           it('replies with the response from github', () => {
             messageHandler.handleMessage(validMessage);
-            fakeGithub.inviteMember.getCall(0).args[2]('Looks good');
+            fakeGithub.inviteMember.getCall(0).args[1]('Looks good');
             const message = validMessage.reply.getCall(0).args[0];
             expect(message).to.equal('Looks good');
           });
+
+          it('replies with a message when invitations are subject to rate limits', () => {
+            messageHandler.handleMessage(validMessage);
+            fakeGithub.inviteMember.getCall(0).args[2]('rate-limited');
+            const message = validMessage.reply.getCall(0).args[0];
+            const expectedMessage = 'GitHub rate-limits organisation invitations particularly aggressively. Unfortunately, we have reached the limit for this period. Try again in 24 hours.';
+            expect(message).to.equal(expectedMessage);
+          })
+
+          it('replies with a default error message when github responds with a unrecognized error', () => {
+            messageHandler.handleMessage(validMessage);
+            fakeGithub.inviteMember.getCall(0).args[2]('unknown-error');
+            const message = validMessage.reply.getCall(0).args[0];
+            const expectedMessage = 'Unknown error. Try again later, or contact @daveio if the issue persists.';
+            expect(message).to.equal(expectedMessage);
+          })
         });
       });
     });

@@ -3,14 +3,22 @@ const httpPort = 3838;
 
 const Discord = require('discord.js');
 
-const github = require('./src/github_api');
-const messageHandler = require('./src/message_handler')(github);
+const GithubApi = require('./src/github_api');
+const MessageHandler = require('./src/message_handler');
 const validate = require('./src/validate');
 
-const discordToken = process.env.DISCORD_API_TOKEN;
-const githubToken = process.env.GITHUB_API_TOKEN;
+const {
+  DISCORD_API_TOKEN: discordToken,
+  GITHUB_API_TOKEN: githubToken,
+  GITHUB_ORG_NAME: githubOrgName,
+  BOT_NAME: botName,
+} = process.env;
 
 validate.token(githubToken, discordToken);
+validate.bot(githubOrgName, botName);
+
+const github = new GithubApi(githubToken, githubOrgName);
+const messageHandler = new MessageHandler(github, botName);
 
 // Create an instance of a Discord client
 const client = new Discord.Client();
