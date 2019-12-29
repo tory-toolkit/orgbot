@@ -4,6 +4,7 @@ const httpPort = 3838;
 const Discord = require('discord.js');
 
 const github = require('./src/github_api');
+const messageHandler = require('./src/message_handler')(github);
 const validate = require('./src/validate');
 
 const discordToken = process.env.DISCORD_API_TOKEN;
@@ -18,40 +19,7 @@ client.on('ready', () => {
   console.log("I'm up!");
 });
 
-client.on('message', message => {
-  if (message.author.bot) return;
-
-  const messageTokens = message.content.toLowerCase().split(/ +/);
-  const orgName = 'tory-toolkit';
-
-  if (!messageTokens[0] === 'orgbot') return;
-
-  const command = messageTokens[1];
-  const user = messageTokens[2];
-
-  if (command === 'check') {
-    if (messageTokens.length === 3) {
-      github.checkMembership(orgName, user, resp => {
-        message.reply(resp);
-      });
-    } else {
-      message.reply(`Invalid command. Try
-      \`orgbot check USERNAME \` -- check if GitHub user USERNAME is a member of the organisation`);
-    }
-  }
-
-  if (command === 'invite') {
-    if (messageTokens.length === 3) {
-      github.inviteMember(orgName, user, resp => {
-        message.reply(resp);
-      });
-    } else {
-      message.reply(`Invalid command. Try
-      \`orgbot invite USERNAME\` -- invite GitHub user USERNAME to the organisation`);
-    }
-  }
-
-});
+client.on('message', messageHandler.handleMessage);
 
 client.on('error', err => {
   console.log(err);
