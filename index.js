@@ -6,6 +6,7 @@ const Discord = require('discord.js');
 const GithubApi = require('./src/github_api');
 const MessageHandler = require('./src/message_handler');
 const validate = require('./src/validate');
+const Pjson = require('./package.json');
 
 const {
   DISCORD_API_TOKEN: discordToken,
@@ -24,6 +25,9 @@ const messageHandler = new MessageHandler(github, botName);
 const client = new Discord.Client();
 
 client.on('ready', () => {
+  client.user.setActivity(`v${Pjson.version} | orgbot check/invite {user}`, { type: 'PLAYING' })
+    .then(presence => console.log(`Activity set to ${presence.game ? presence.game.name : 'none'}`))
+    .catch(console.error);
   console.log("I'm up!");
 });
 
